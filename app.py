@@ -579,7 +579,7 @@ def read_rejection_file_to_df(filepath):
 
 def clean_rejection_data(df):
     df.columns = df.columns.str.strip()
-    df["DateTime"] = pd.to_datetime(df["DateTime"], errors="coerce")
+    df["DateTime"] = pd.to_datetime(df["DateTime"], errors="coerce", dayfirst=True)
 
     df_r = df[df["Machine Name"].fillna("").str.startswith("Racer")].copy()
     df_r = df_r[df_r["Reject Detail"] != "Twin lens rejected"].copy()
@@ -664,26 +664,29 @@ def clean_rejection_data(df):
 
     df_c3_clean = df_r.loc[accepted_rows_c3]
 
-    final_df = pd.concat([df_c1_clean, df_c2_clean, df_c3_clean]).sort_values("DateTime")
+    combined = pd.concat([df_c1_clean, df_c2_clean, df_c3_clean]).sort_index()
+
+    final_df = combined.copy()
+    final_df["Hour"] = final_df["DateTime"].dt.strftime("%H:00")
     final_df["Timestamp"] = final_df["DateTime"].dt.strftime("%Y-%m-%dT%H:%M:%S")
-    final_df["Hour"] = final_df["DateTime"].dt.hour
     final_df = final_df.fillna("")
 
     return final_df
 
 def _save_and_read_rejection(file_tuple):
-    file_obj, upload_folder = file_tuple
-    raw_name = secure_filename(file_obj.filename)
-    if not raw_name:
-        raise ValueError("Invalid filename")
-    filename = f"{uuid.uuid4().hex}_{raw_name}"
-    filepath = os.path.join(upload_folder, filename)
-    file_obj.save(filepath)
+    file_storage, target_folder = file_tuple
+    filename = secure_filename(file_storage.filename)
+    filepath = os.path.join(target_folder, filename)
+    file_storage.save(filepath)
+
     try:
         return read_rejection_file_to_df(filepath)
     finally:
         if os.path.exists(filepath):
-            os.remove(filepath)
+            try:
+                os.remove(filepath)
+            except OSError:
+                pass
 
 def fast_json_response(obj):
     return Response(json.dumps(obj, default=str), mimetype="application/json")
@@ -693,10 +696,14 @@ def _rejection_dataset_response():
         prune_old_rejection_records(conn)
         records = fetch_all_rejection_records(conn)
 
+    log.info('Rejection dataset response loaded with %d stored records', len(records))
     if not records:
         return fast_json_response({"data": [], "min_ts": "", "max_ts": ""})
 
-    timestamps = [r["Timestamp"] for r in records if r["Timestamp"]]
+    timestamps = [r["Timestamp"] for r in records if r.get("Timestamp")]
+    if not timestamps:
+        return fast_json_response({"data": records, "min_ts": "", "max_ts": ""})
+
     min_ts = min(timestamps)[:16]
     max_dt = pd.to_datetime(max(timestamps)) + pd.Timedelta(minutes=1)
     max_ts = max_dt.strftime("%Y-%m-%dT%H:%M")
@@ -724,6 +731,7 @@ def alarm_dashboard():
 
 @app.route('/rejection')
 def rejection_dashboard():
+    log.info('Rejection Dashboard loaded')
     return render_template('rejection.html')
 
 @app.route('/health')
@@ -817,10 +825,14 @@ def analyze_rejection_file():
             .to_dict(orient="records")
         )
 
+        log.info('Analyzed %d rejection records from %d file(s)', len(records), len(files))
         if not records:
             return fast_json_response({"data": [], "min_ts": "", "max_ts": ""})
 
-        timestamps = [r["Timestamp"] for r in records if r["Timestamp"]]
+        timestamps = [r["Timestamp"] for r in records if r.get("Timestamp")]
+        if not timestamps:
+            return fast_json_response({"data": records, "min_ts": "", "max_ts": ""})
+
         min_ts = min(timestamps)[:16]
         max_dt = pd.to_datetime(max(timestamps)) + pd.Timedelta(minutes=1)
         max_ts = max_dt.strftime("%Y-%m-%dT%H:%M")
@@ -865,6 +877,7 @@ def upload_rejection_file():
             insert_rejection_records(conn, new_records)
             prune_old_rejection_records(conn)
 
+        log.info('Uploaded and stored %d rejection records from %d file(s)', len(new_records), len(files))
         return _rejection_dataset_response()
 
     except ValueError as e:
