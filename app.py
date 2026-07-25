@@ -894,23 +894,42 @@ def internal_error(e):
 # ---------------------------------------------------------------------------
 def get_server_ip_addresses():
     ip_list = []
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.settimeout(0)
-        s.connect(('8.8.8.8', 80))
-        ip = s.getsockname()[0]
-        s.close()
-        if ip and ip != '127.0.0.1':
-            ip_list.append(ip)
-    except Exception:
-        pass
+    # Method 1: Query OS routing table via socket connect (no network data sent)
+    for target in [('8.8.8.8', 80), ('1.1.1.1', 80), ('10.255.255.255', 1)]:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(target)
+            ip = s.getsockname()[0]
+            s.close()
+            if ip and not ip.startswith('127.') and ip not in ip_list:
+                ip_list.append(ip)
+                break
+        except Exception:
+            pass
+
+    # Method 2: System getaddrinfo / hostname resolution
     try:
         hostname = socket.gethostname()
-        for ip in socket.gethostbyname_ex(hostname)[2]:
-            if ip not in ip_list and not ip.startswith('127.'):
-                ip_list.append(ip)
+        for info in socket.getaddrinfo(hostname, None):
+            if info[0] == socket.AF_INET:
+                ip = info[4][0]
+                if ip and not ip.startswith('127.') and ip not in ip_list:
+                    ip_list.append(ip)
     except Exception:
         pass
+
+    # Method 3: System network interfaces (ifconfig / ipconfig fallback)
+    if not ip_list:
+        try:
+            import subprocess, re
+            cmd = ['ifconfig'] if platform.system() != 'Windows' else ['ipconfig']
+            out = subprocess.check_output(cmd, text=True)
+            for ip in re.findall(r'(?:inet\s+|IPv4 Address[.\s]*:\s*)(\d+\.\d+\.\d+\.\d+)', out):
+                if not ip.startswith('127.') and ip not in ip_list:
+                    ip_list.append(ip)
+        except Exception:
+            pass
+
     return ip_list
 
 def print_server_urls(host, port):
