@@ -890,10 +890,50 @@ def internal_error(e):
     return jsonify({"error": "Internal server error"}), 500
 
 # ---------------------------------------------------------------------------
-# Server Startup Helper
+# Server Startup Helper & IP Discovery
 # ---------------------------------------------------------------------------
+def get_server_ip_addresses():
+    ip_list = []
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+        if ip and ip != '127.0.0.1':
+            ip_list.append(ip)
+    except Exception:
+        pass
+    try:
+        hostname = socket.gethostname()
+        for ip in socket.gethostbyname_ex(hostname)[2]:
+            if ip not in ip_list and not ip.startswith('127.'):
+                ip_list.append(ip)
+    except Exception:
+        pass
+    return ip_list
+
+def print_server_urls(host, port):
+    ips = get_server_ip_addresses()
+    port_str = f":{port}" if port != 80 else ""
+    
+    print("\n" + "=" * 70)
+    print(" 🚀 MEI Analytics Dashboard Server is RUNNING!")
+    print("=" * 70)
+    print(f"  ➜ Local Computer:   http://127.0.0.1{port_str}/alarm")
+    if ips:
+        for ip in ips:
+            print(f"  ➜ Network (LAN IP): http://{ip}{port_str}/alarm")
+            print(f"  ➜ Rejection Route:  http://{ip}{port_str}/rejection")
+    else:
+        print(f"  ➜ Network (LAN IP): http://{host}{port_str}/alarm")
+    print("=" * 70 + "\n")
+
+    log.info("Dashboard URLs - Local: http://127.0.0.1%s/alarm | Network IPs: %s", port_str, ips)
+
 def _run_production(host, port):
     """Cross-platform production WSGI server runner (Waitress for Windows/macOS, Gunicorn for Linux)."""
+    print_server_urls(host, port)
     system = platform.system()
     
     # On Windows and macOS, Waitress is preferred because it uses multi-threading rather than process fork()
@@ -939,6 +979,7 @@ if __name__ == '__main__':
     debug = os.environ.get('FLASK_DEBUG', '0') == '1'
 
     if debug:
+        print_server_urls(host, port)
         log.info('Starting Flask DEV server on %s:%s (debug=True)', host, port)
         app.run(host=host, port=port, debug=True, threaded=True)
     else:
