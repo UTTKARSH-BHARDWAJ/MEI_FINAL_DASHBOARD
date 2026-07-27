@@ -236,22 +236,23 @@ def parse_datetime_flexible(dt_val):
     if not dt_str:
         return None
     patterns = [
-        '%d/%m/%Y %H:%M:%S',
-        '%m/%d/%Y %I:%M:%S %p',
-        '%d/%m/%Y %I:%M:%S %p',
         '%m/%d/%Y %H:%M:%S',
+        '%m/%d/%Y %I:%M:%S %p',
+        '%d/%m/%Y %H:%M:%S',
+        '%d/%m/%Y %I:%M:%S %p',
+        '%m/%d/%Y %H:%M',
+        '%m/%d/%Y %I:%M %p',
+        '%d/%m/%Y %H:%M',
+        '%d/%m/%Y %I:%M %p',
         '%Y-%m-%d %H:%M:%S',
         '%Y-%m-%dT%H:%M:%S',
-        '%d-%m-%Y %H:%M:%S',
         '%m-%d-%Y %H:%M:%S',
-        '%d/%m/%Y %H:%M',
-        '%m/%d/%Y %H:%M',
-        '%d/%m/%Y %I:%M %p',
-        '%m/%d/%Y %I:%M %p',
+        '%d-%m-%Y %H:%M:%S',
         '%Y-%m-%d %H:%M',
-        '%d-%m-%Y',
         '%m/%d/%Y',
         '%d/%m/%Y',
+        '%m-%d-%Y',
+        '%d-%m-%Y',
         '%Y-%m-%d'
     ]
     for fmt in patterns:
@@ -260,7 +261,7 @@ def parse_datetime_flexible(dt_val):
         except ValueError:
             pass
     try:
-        ts = pd.to_datetime(dt_str, errors='coerce', dayfirst=True)
+        ts = pd.to_datetime(dt_str, errors='coerce', dayfirst=False)
         if pd.notna(ts):
             return ts.to_pydatetime()
     except Exception:
@@ -579,7 +580,7 @@ def read_rejection_file_to_df(filepath):
 
 def clean_rejection_data(df):
     df.columns = df.columns.str.strip()
-    df["DateTime"] = pd.to_datetime(df["DateTime"], errors="coerce", dayfirst=True)
+    df["DateTime"] = pd.to_datetime(df["DateTime"], errors="coerce", dayfirst=False)
 
     df_r = df[df["Machine Name"].fillna("").str.startswith("Racer")].copy()
     df_r = df_r[df_r["Reject Detail"] != "Twin lens rejected"].copy()
