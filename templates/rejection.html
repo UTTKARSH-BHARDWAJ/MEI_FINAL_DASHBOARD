@@ -496,7 +496,7 @@
                 ' <span style="font-size:0.7em; font-weight:normal; color:#636e72;">(click a day to filter everything below)</span>';
 
             const hourCounts = Array(24).fill(0);
-            reasonsData.forEach(d => { if (selectedMachines.length === 0 || selectedMachines.includes(d['Machine Name'])) hourCounts[d.Hour]++; });
+            reasonsData.forEach(d => { if (selectedMachines.length === 0 || selectedMachines.includes(d['Machine Name'])) { const h = parseInt(d.Hour, 10); if (!isNaN(h) && h >= 0 && h < 24) hourCounts[h]++; } });
             const maxHourVal = Math.max(...hourCounts);
 
             if(hourlyChart) hourlyChart.destroy();

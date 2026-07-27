@@ -1,0 +1,49 @@
+2026-07-27 11:18:22 [INFO] Dashboard URLs - Local: http://127.0.0.1:8080/alarm | Network IPs: ['10.10.30.165']
+2026-07-27 11:18:22 [INFO] Starting production Waitress WSGI server on 0.0.0.0:8080
+2026-07-27 11:18:22 [INFO] Serving on http://0.0.0.0:8080
+2026-07-27 11:18:29 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 11:18:42 [INFO] Analyzed 13 alarm records from 1 file(s)
+2026-07-27 11:18:48 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 11:28:44 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 11:28:52 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 11:29:33 [INFO] Analyzed 46 alarm records from 1 file(s)
+2026-07-27 12:12:36 [INFO] Rejection Dashboard loaded
+2026-07-27 12:12:36 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 12:12:41 [INFO] Analyzed 11 rejection records from 1 file(s)
+2026-07-27 13:14:30 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 13:14:39 [INFO] Rejection Dashboard loaded
+2026-07-27 13:14:39 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:14:47 [INFO] Analyzed 11 rejection records from 1 file(s)
+2026-07-27 13:15:39 [INFO] Analyzed 23354 rejection records from 1 file(s)
+2026-07-27 13:16:08 [INFO] Rejection Dashboard loaded
+2026-07-27 13:16:08 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:16:21 [INFO] Analyzed 23354 rejection records from 1 file(s)
+2026-07-27 13:16:39 [INFO] Analyzed 11 rejection records from 1 file(s)
+2026-07-27 13:17:24 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 13:17:30 [INFO] Analyzed 46 alarm records from 1 file(s)
+2026-07-27 13:17:35 [INFO] Alarm Dashboard loaded with 0 records
+2026-07-27 13:18:10 [INFO] Rejection Dashboard loaded
+2026-07-27 13:18:10 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:18:24 [INFO] Analyzed 23354 rejection records from 1 file(s)
+2026-07-27 13:19:21 [INFO] Rejection Dashboard loaded
+2026-07-27 13:19:21 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:19:22 [INFO] Rejection Dashboard loaded
+2026-07-27 13:19:22 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:19:22 [INFO] Rejection Dashboard loaded
+2026-07-27 13:19:22 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:20:09 [INFO] Rejection Dashboard loaded
+2026-07-27 13:20:09 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:20:20 [INFO] Analyzed 23354 rejection records from 1 file(s)
+2026-07-27 13:20:22 [INFO] Rejection Dashboard loaded
+2026-07-27 13:20:22 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:20:32 [INFO] Analyzed 23354 rejection records from 1 file(s)
+2026-07-27 13:21:39 [INFO] Dashboard URLs - Local: http://127.0.0.1:8080/alarm | Network IPs: ['10.10.30.165']
+2026-07-27 13:21:39 [INFO] Starting production Waitress WSGI server on 0.0.0.0:8080
+2026-07-27 13:21:39 [INFO] Serving on http://0.0.0.0:8080
+2026-07-27 13:21:43 [INFO] Rejection Dashboard loaded
+2026-07-27 13:21:43 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:21:43 [INFO] Rejection Dashboard loaded
+2026-07-27 13:21:43 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:21:43 [INFO] Rejection Dashboard loaded
+2026-07-27 13:21:43 [INFO] Rejection dataset response loaded with 0 stored records
+2026-07-27 13:21:53 [INFO] Analyzed 23354 rejection records from 1 file(s)
